@@ -1,0 +1,20 @@
+{
+  "sources": [
+    {
+      "feed": "http://downloads.bbc.co.uk/podcasts/radio4/thought/rss.xml",
+      "path": "/home/mjwittering/Music/Podcasts/Thought-For-The-Day"
+    },
+    {
+      "feed": "http://downloads.bbc.co.uk/podcasts/radio4/tip/rss.xml",
+      "path": "/home/mjwittering/Music/Podcasts/Today-in-Parliament"
+    },
+    {
+      "feed": "http://downloads.bbc.co.uk/podcasts/radio4/wpr/rss.xml",
+      "path": "/home/mjwittering/Music/Podcasts/Weekly-Political-Review"
+    },
+    {
+      "feed": "http://www.noagendanation.com/archive/rss",
+      "path": "/home/mjwittering/Music/Podcasts/No-Agenda"
+    }
+  ]
+}
