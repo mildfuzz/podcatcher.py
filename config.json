@@ -13,6 +13,10 @@
       "path": "/home/mjwittering/Music/Podcasts/Weekly-Political-Review"
     },
     {
+      "feed": "http://leo.am/podcasts/tnt",
+      "path": "/home/mjwittering/Music/Podcasts/Tech-News-Today"
+    },
+    {
       "feed": "http://www.noagendanation.com/archive/rss",
       "path": "/home/mjwittering/Music/Podcasts/No-Agenda"
     }
