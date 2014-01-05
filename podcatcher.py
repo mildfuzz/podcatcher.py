@@ -93,7 +93,6 @@ class Podcatcher(object):
         if 'title' in kwargs and 'message' in kwargs:
             notify2.init('Podcatcher.py')
             
-            # A number of stock 
             notify = notify2.Notification(kwargs['title'], kwargs['message'], "computer")
             
             status = notify.show(), """Message displayed..."""
