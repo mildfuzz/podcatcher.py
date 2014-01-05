@@ -8,6 +8,7 @@
 import codecs
 import feedparser
 import json
+import notify2
 import os
 import requests
 import urlparse
@@ -82,6 +83,23 @@ class Podcatcher(object):
         
         else:
             status = False, """Path value isn't available..."""
+        
+        return status
+    
+    # --------------------------------------------------------------------------
+    
+    def notification(self, *args, **kwargs):
+        
+        if 'title' in kwargs and 'message' in kwargs:
+            notify2.init('Podcatcher.py')
+            
+            # A number of stock 
+            notify = notify2.Notification(kwargs['title'], kwargs['message'], "computer")
+            
+            status = notify.show(), """Message displayed..."""
+        
+        else:
+            status = False, """Error..."""
         
         return status
     
@@ -165,6 +183,10 @@ def main():
                     for item in rss.entries:
                         
                         status, message = podcatcher.podcast(path=source['path'], podcast=item.link)
+                        
+                        if status is True:
+                            
+                            status, message = podcatcher.notification(title='Podcatcher.py', message=message)
 
 # ------------------------------------------------------------------------------
 
