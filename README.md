@@ -1,8 +1,8 @@
-# README for Podcatcher.py
+# README for podcatcher.py
 
 It was cold and wet outside, so I wrote podcatcher.py, a podcast client for the command line written in Python.
 
-Podcatcher.py uses the `config.json` file to store the location of RSS feeds and local files paths for saving downloaded podcasts.
+The project, podcatcher.py uses the `config.json` file to store the location of RSS feeds and local files paths for saving downloaded podcasts.
 
 ## Scheduling Polling Feeds
 
