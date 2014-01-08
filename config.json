@@ -2,23 +2,33 @@
   "sources": [
     {
       "feed": "http://downloads.bbc.co.uk/podcasts/radio4/thought/rss.xml",
-      "path": "/home/mjwittering/Music/Podcasts/Thought-For-The-Day"
+      "name": "Thought for the Day",
+      "path": "/home/mjwittering/Music/Podcasts/Thought-for-the-Day"
     },
     {
       "feed": "http://downloads.bbc.co.uk/podcasts/radio4/tip/rss.xml",
+      "name": "Today in Parliament",
       "path": "/home/mjwittering/Music/Podcasts/Today-in-Parliament"
     },
     {
       "feed": "http://downloads.bbc.co.uk/podcasts/radio4/wpr/rss.xml",
+      "name": "Weekly Political Review",
       "path": "/home/mjwittering/Music/Podcasts/Weekly-Political-Review"
     },
     {
       "feed": "http://leo.am/podcasts/tnt",
+      "name": "Tech News Today",
       "path": "/home/mjwittering/Music/Podcasts/Tech-News-Today"
     },
     {
       "feed": "http://www.noagendanation.com/archive/rss",
+      "name": "No Agenda",
       "path": "/home/mjwittering/Music/Podcasts/No-Agenda"
+    },
+    {
+      "feed": "http://feeds.feedburner.com/DHUnplugged?format=xml",
+      "name": "DH Unplugged",
+      "path": "/home/mjwittering/Music/Podcasts/DH-Unplugged"
     }
   ]
 }
