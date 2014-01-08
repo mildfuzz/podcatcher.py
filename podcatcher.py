@@ -1,14 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-# ------------------------------------------------------------------------------
-# 
-# ------------------------------------------------------------------------------
-
 import codecs
+import datetime
 import feedparser
 import json
-import notify2
+# import notify2
 import os
 import requests
 import urlparse
@@ -22,53 +19,34 @@ class Podcatcher(object):
     
     # --------------------------------------------------------------------------
     
-    def config(self, *args, **kwargs):
+    def json(self, *args, **kwargs):
         
-        if 'path' in kwargs:
+        if 'path' in kwargs and 'data' in kwargs:
             if os.path.exists(kwargs['path']) is True and os.path.isfile(kwargs['path']) is True:
-                handle = codecs.open(kwargs['path'], 'rb', 'utf-8')
+                handle = codecs.open(kwargs['path'], 'wb', 'utf-8')
                 
-                status = True, json.load(handle)
+                payload = True, json.dump(kwargs['data'], handle, indent=2), {'datetime': self.now(), 'action': """Write, %s""" % (kwargs['path'])}
                 
                 handle.close()
             
             else:
-                status = False, """There is an error in the given path..."""
+                payload = False, None, {'datetime': self.now(), 'error': """There is an error, could not write file..."""}
         
-        else:
-            status = False, """Path value isn't available..."""
-        
-        return status
-    
-    # --------------------------------------------------------------------------
-    
-    def feed(self, *args, **kwargs):
-        
-        if 'path' in kwargs:
-            status, response = self.get(path=kwargs['path'])
-            
-            if hasattr(response, 'status_code') is True and isinstance(response.status_code, int) is True and response.status_code == 200:
+        elif 'path' in kwargs and 'data' not in kwargs:
+            if os.path.exists(kwargs['path']) is True and os.path.isfile(kwargs['path']) is True:
+                handle = codecs.open(kwargs['path'], 'rb', 'utf-8')
                 
-                if hasattr(response, 'headers') is True and 'Content-Type' in response.headers:
-                    
-                    content_type = response.headers['Content-Type'].lower().split('; ')[0]
-                    
-                    if content_type == 'application/rss+xml' or 'text/xml':
-                        status = True, response.text
-                    
-                    else:
-                        status = False, """Request payload isn't XML..."""
+                payload = True, json.load(handle), {'datetime': self.now(), 'action': """Read, %s""" % (kwargs['path'])}
                 
-                else:
-                    status = False, """Content-Type isn't available..."""
+                handle.close()
             
             else:
-                status = False, """Response code isn't HTTP OK 200..."""
+                payload = False, None, {'datetime': self.now(), 'error': """There is an error in the given path..."""}
         
         else:
-            status = False, """Path value isn't available..."""
+            payload = False, None, {'datetime': self.now(), 'error': """Path value isn't available..."""}
         
-        return status
+        return payload
     
     # --------------------------------------------------------------------------
     
@@ -76,31 +54,37 @@ class Podcatcher(object):
         
         if 'path' in kwargs:
             try:
-                status = True, requests.get(kwargs['path'], timeout=10)
+                payload = True, requests.get(kwargs['path'], timeout=10), {'datetime': self.now(), 'action': """Requested, %s""" % (kwargs['path'])}
             
             except:
-                status = False, """Request failed..."""
+                payload = False, None, {'datetime': self.now(), 'error': """Request failed, %s""" % (kwargs['path'])}
         
         else:
-            status = False, """Path value isn't available..."""
+            payload = False, None, {'datetime': self.now(), 'error': """Path value isn't available, %s""" % (kwargs['path'])}
         
-        return status
+        return payload
     
     # --------------------------------------------------------------------------
     
-    def notification(self, *args, **kwargs):
+    def now(self, *args, **kwargs):
         
-        if 'title' in kwargs and 'message' in kwargs:
-            notify2.init('Podcatcher.py')
+        return unicode(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    
+    # --------------------------------------------------------------------------
+    
+    # def notification(self, *args, **kwargs):
+        
+    #     if 'title' in kwargs and 'message' in kwargs:
+    #         notify2.init('Podcatcher.py')
             
-            notify = notify2.Notification(kwargs['title'], kwargs['message'], "computer")
+    #         notify = notify2.Notification(kwargs['title'], kwargs['message'], "computer")
             
-            status = notify.show(), """Message displayed..."""
+    #         status = notify.show(), """Message displayed..."""
         
-        else:
-            status = False, """Error..."""
+    #     else:
+    #         status = False, """Error..."""
         
-        return status
+    #     return status
     
     # --------------------------------------------------------------------------
     
@@ -109,19 +93,19 @@ class Podcatcher(object):
         if 'path' in kwargs:
             
             if os.path.exists(kwargs['path']) is True and os.path.isdir(kwargs['path']) is True:
-                status = True, """Directory exists..."""
+                payload = True, None, {'datetime': self.now(), 'action': """Directory exists, %s""" % (kwargs['path'])}
             
             elif os.path.exists(kwargs['path']) is True and os.path.isdir(kwargs['path']) is False:
-                status = False, """Path exists, and isn't directory..."""
+                payload = False, None, {'datetime': self.now(), 'error': """Path exists, and isn't directory, %s""" % (kwargs['path'])}
             
             else:
                 os.makedirs(kwargs['path'])
-                status = True, """Creating directory..."""
+                payload = True, None, {'datetime': self.now(), 'action': """Creating directory, %s""" % (kwargs['path'])}
         
         else:
-            status = False, """Error..."""
+            payload = False, None, {'datetime': self.now(), 'action': """Error, %s""" % (kwargs['path'])}
         
-        return status
+        return payload
     
     # --------------------------------------------------------------------------
     
@@ -135,7 +119,7 @@ class Podcatcher(object):
             
             if os.path.exists(kwargs['path']) is True and os.path.exists(path_podcast) is False:
                 
-                status, response = self.get(path=kwargs['podcast'])
+                status, response, metrics = self.get(path=kwargs['podcast'])
                 
                 if status is True:
                     handle = codecs.open(path_podcast, 'wb')
@@ -144,18 +128,48 @@ class Podcatcher(object):
                     
                     handle.close()
                     
-                    status = True, """Downloaded... %s""" % (kwargs['podcast'])
+                    payload = True, None, {'datetime': self.now(), 'action': """Downloaded, %s""" % (kwargs['podcast'])}
                 
                 else:
-                    status = status, response
+                    payload = status, None, metrics
             
             else:
-                status = False, """Skip... %s""" % (kwargs['podcast'])
+                payload = False, None, {'datetime': self.now(), 'action': """Skip, %s""" % (kwargs['podcast'])}
         
         else:
-            status = False, """Error..."""
+            payload = False, {'datetime': self.now(), 'error': """Error, %s""" % (kwargs['podcast'])}
         
-        return status
+        return payload
+    
+    # --------------------------------------------------------------------------
+    
+    def rss(self, *args, **kwargs):
+        
+        if 'path' in kwargs:
+            status, response, metrics = self.get(path=kwargs['path'])
+            
+            if hasattr(response, 'status_code') is True and isinstance(response.status_code, int) is True and response.status_code == 200:
+                
+                if hasattr(response, 'headers') is True and 'Content-Type' in response.headers:
+                    
+                    content_type = response.headers['Content-Type'].lower().split('; ')[0]
+                    
+                    if content_type == 'application/rss+xml' or 'text/xml':
+                        payload = True, response.text, metrics
+                    
+                    else:
+                        payload = False, None, {'datetime': self.now(), 'error': """Request payload isn't XML..."""}
+                
+                else:
+                    payload = False, None, {'datetime': self.now(), 'error': """Content-Type isn't available..."""}
+            
+            else:
+                payload = False, None, {'datetime': self.now(), 'error': """Response code isn't HTTP OK 200..."""}
+        
+        else:
+            payload = False, None, metrics
+        
+        return payload
 
 # ------------------------------------------------------------------------------
 
@@ -163,29 +177,57 @@ def main():
     
     podcatcher = Podcatcher()
     
-    status, config = podcatcher.config(path='config.json')
+    # --------------------------------------------------------------------------
     
-    if status is not False and 'sources' in config:
+    # Load the log.json.
+    status, log, metrics = podcatcher.json(path='log.json')
+    log['records'].append(metrics)
+    
+    if status is True:
         
-        for source in config['sources']:
+        # Load the config.json.
+        status, config, metrics = podcatcher.json(path='config.json')
+        log['records'].append(metrics)
+        
+        # ----------------------------------------------------------------------
+        
+        if status is not False and 'sources' in config:
             
-            status, message = podcatcher.path(path=source['path'])
-            
-            if status is True:
+            # foreach source in config.json.
+            for source in config['sources']:
                 
-                status, response = podcatcher.feed(path=source['feed'])
+                # Test the existence of each path, and create new directories.
+                status, message, metrics = podcatcher.path(path=source['path'])
+                log['records'].append(metrics)
                 
+                # If the local path exists, and is directory.
                 if status is True:
                     
-                    rss = feedparser.parse(response)
+                    # Request the RSS file.
+                    status, response, metrics = podcatcher.rss(path=source['feed'])
+                    log['records'].append(metrics)
                     
-                    for item in rss.entries:
+                    if status is True:
                         
-                        status, message = podcatcher.podcast(path=source['path'], podcast=item.link)
+                        # Create an object of the RSS file.
+                        rss = feedparser.parse(response)
                         
-                        if status is True:
+                        # Loop through each item in the RSS file.
+                        for item in rss.entries:
                             
-                            status, message = podcatcher.notification(title='Podcatcher.py', message=message)
+                            if 'href' in item.enclosures[0]:
+                                
+                                # Request the href of the RSS enclosure.
+                                status, message, metrics = podcatcher.podcast(path=source['path'], podcast=item.enclosures[0]['href'])
+                                log['records'].append(metrics)
+    
+    # --------------------------------------------------------------------------
+    
+    # Log process has finished.
+    log['records'].append({'datetime': podcatcher.now(), 'action': 'Finished...'})
+    
+    # Save log.json to disk.
+    status, data, metrics = podcatcher.json(path='log.json', data=log)
 
 # ------------------------------------------------------------------------------
 
