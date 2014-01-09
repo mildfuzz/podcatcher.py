@@ -29,6 +29,11 @@
       "feed": "http://feeds.feedburner.com/DHUnplugged?format=xml",
       "name": "DH Unplugged",
       "path": "/home/mjwittering/Music/Podcasts/DH-Unplugged"
+    },
+    {
+      "feed": "http://anewdomain.net/category/podcast/feed/",
+      "name": "A New Domain",
+      "path": "/home/mjwittering/Music/Podcasts/A-New-Domain"
     }
   ]
 }
